@@ -281,6 +281,30 @@ The `references/` directory ships with four companion documents:
 <br/>
 
 ---
+## How it works
+
+![How soc-l1-triage-engine turns an alert into a documented verdict](docs/how-it-works.gif)
+
+| Phase | What happens |
+|:---|:---|
+| **0 Intake** | Pulls the alert fields (rule, severity, timestamp, source, destination, user, process or hash, raw log, tool, client context). Asks for anything missing. Raw log first. |
+| **1 Context** | Scores five dimensions at +1 (TP evidence), 0 or -1 (FP evidence): user context, asset criticality, behavioral baseline, IOC enrichment, attack-chain correlation. |
+| **2 Playbook** | Applies the playbook for the alert type: phishing, malware or ransomware, C2 beaconing, brute force, credential abuse, lateral movement, PowerShell, exfiltration, privilege escalation, anomalous login. |
+| **3 Verdict** | Decision tree first, then the summed score from -5 to +5. |
+| **4-5 Close out** | True positive: 5W escalation package. False positive: closure note with root cause and tuning recommendation. Ambiguous: gather more evidence. |
+| **6 Guardrails** | Calls out common mistakes: "I can explain it, so it's FP", "just one alert", "same as last week", "service account, so auto-FP", "close it fast for the SLA". |
+
+| Score | Verdict |
+|:---|:---|
+| +3 to +5 | True positive. Escalate to L2 immediately |
+| +1 to +2 | Likely TP. Escalate, medium priority |
+| 0 | Ambiguous. Gather more evidence |
+| -1 to -2 | Likely FP. Close with documentation and a tuning rec |
+| -3 to -5 | Confirmed FP. Close, document, recommend tuning |
+
+The skill tells you which threat-intel sources to check. You run the lookups and paste the results.
+
+---
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:e94560,40:0a1628,100:0d1117&height=140&section=footer&text=Built%20in%20public.%20Shipped%20free.%20For%20analysts%20who%20think%20in%20systems.&fontSize=14&fontColor=8b949e&fontAlignY=55&reversal=true" width="100%"/>
 
